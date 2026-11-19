@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reg</title>
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="../index.html" class="brand">Переплёт </a>
+      <nav class="menu">
+        <a href="../index.html">Главная</a>
+        <a href="catalog.html">Каталог книг</a>
+        <a href="login.html">Вход</a>
+        <a href="register.html" class="btn green-btn">Регистрация</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box">
+      <h1>Регистрация читателя</h1>
+      <p class="sub-text">Создайте читательский билет для доступа к полной коллекции книг.</p>
+
+      <form id="registerForm" novalidate>
+        <div class="field">
+          <label for="fullName">ФИО</label>
+          <input type="text" id="fullName" name="fullName" class="input-box" placeholder="Петров Петя Петрович">
+          <span class="err" id="fullNameError"></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Почта</label>
+          <input type="email" id="email" name="email" class="input-box" placeholder="reader@mail.ru">
+          <span class="err" id="emailError"></span>
+        </div>
+
+        <div class="field">
+          <label for="login">Логин</label>
+          <input type="text" id="login" name="login" class="input-box" placeholder="book_lover">
+          <span class="err" id="loginError"></span>
+        </div>
+
+        <div class="field">
+          <label for="genre">Любимый жанр (необязательно)</label>
+          <select id="genre" name="genre" class="input-box">
+            <option value="">Выберите жанр...</option>
+            <option value="classic">Классическая литература</option>
+            <option value="scifi">Научная фантастика</option>
+            <option value="it">IT и программирование</option>
+            <option value="detective">Детективы</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="password">Пароль (минимум 8 символов)</label>
+          <div class="pass-line">
+            <input type="password" id="password" name="password" class="input-box" placeholder="••••••••">
+            <button type="button" class="eye-btn" data-target="password" aria-label="Показать пароль">👁️</button>
+          </div>
+          <span class="err" id="passwordError"></span>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Повтор пароля </label>
+          <div class="pass-line">
+            <input type="password" id="confirmPassword" name="confirmPassword" class="input-box" placeholder="••••••••">
+            <button type="button" class="eye-btn" data-target="confirmPassword" aria-label="Показать пароль">👁️</button>
+          </div>
+          <span class="err" id="confirmPasswordError"></span>
+        </div>
+
+        <button type="submit" class="btn green-btn full-w">Зарегистрироваться</button>
+        <div id="registerSuccess" class="ok-msg hide">
+          Регистрация прошла успешно! Добро пожаловать в «Переплёт».
+        </div>
+      </form>
+
+      <p class="switch-auth">Уже есть аккаунт? <a href="login.html">Войти в систему</a></p>
+    </div>
+  </main>
+
+  <footer class="bottom-bar">
+    <div class="wrap">
+      <p>© 2026 Онлайн-библиотека "Переплёт"..</p>
+    </div>
+  </footer>
+
+  <script src="../scripts/script.js"></script>
+</body>
+</html>

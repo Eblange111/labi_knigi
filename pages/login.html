@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="../index.html" class="brand">Переплёт</a>
+      <nav class="menu">
+        <a href="../index.html">Главная</a>
+        <a href="catalog.html">Каталог книг</a>
+        <a href="login.html" class="active">Вход</a>
+        <a href="register.html" class="btn green-btn">Регистрация</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box">
+      <h1>Вход в библиотеку</h1>
+      <p class="sub-text">Введите логин и пароль от вашего читательского аккаунта.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="loginUsername">Логин или Email *</label>
+          <input type="text" id="loginUsername" name="loginUsername" class="input-box" placeholder="book_lover">
+          <span class="err" id="loginUsernameError"></span>
+        </div>
+
+        <div class="field">
+          <label for="loginPassword">Пароль *</label>
+          <div class="pass-line">
+            <input type="password" id="loginPassword" name="loginPassword" class="input-box" placeholder="••••••••">
+            <button type="button" class="eye-btn" data-target="loginPassword" aria-label="Показать пароль">👁️</button>
+          </div>
+          <span class="err" id="loginPasswordError"></span>
+        </div>
+
+        <button type="submit" class="btn green-btn full-w">Войти</button>
+        <div id="loginSuccess" class="ok-msg hide">
+          Авторизация выполнена! Перенаправление в читальный зал...
+        </div>
+      </form>
+
+      <p class="switch-auth">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+    </div>
+  </main>
+
+  <footer class="bottom-bar">
+    <div class="wrap">
+      <p>© 2026 Онлайн-библиотека "Переплёт".</p>
+    </div>
+  </footer>
+
+  <script src="../scripts/script.js"></script>
+</body>
+</html>

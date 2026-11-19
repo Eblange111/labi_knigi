@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>catalog</title>
+  <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="../index.html" class="brand">Переплёт</a>
+      <nav class="menu">
+        <a href="../index.html">Главная</a>
+        <a href="catalog.html" class="active">Каталог книг</a>
+        <a href="login.html">Вход</a>
+        <a href="register.html" class="btn green-btn">Регистрация</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="cat-head">
+      <h1>Каталог книг</h1>
+      <div class="search-wrap">
+        <input type="text" id="searchInput" class="input-box" placeholder="Поиск по названию или автору..." aria-label="Поиск книг">
+      </div>
+    </div>
+
+    <div id="catalogGrid" class="books-grid">
+      <article class="card" data-title="мастер и маргарита" data-author="михаил булгаков">
+        <div class="cover c-purple">Роман</div>
+        <div class="card-info">
+          <span class="tag">Классика</span>
+          <h2>Мастер и Маргарита</h2>
+          <p class="author">Михаил Булгаков</p>
+          <p class="about">Философский роман о добре и зле, любви и творчестве в Москве 1930-х годов.</p>
+          <button type="button" class="btn line-btn full-w">Читать фрагмент</button>
+        </div>
+      </article>
+
+      <article class="card" data-title="дюна" data-author="фрэнк герберт">
+        <div class="cover c-orange">Фантастика</div>
+        <div class="card-info">
+          <span class="tag">Научная фантастика</span>
+          <h2>Дюна</h2>
+          <p class="author">Фрэнк Герберт</p>
+          <p class="about">Эпическая сага о пустынной планете Арракис, политических интригах и борьбе за выживание.</p>
+          <button type="button" class="btn line-btn full-w">Читать фрагмент</button>
+        </div>
+      </article>
+
+      <article class="card" data-title="преступление и наказание" data-author="федор достоевский">
+        <div class="cover c-dark">Классика</div>
+        <div class="card-info">
+          <span class="tag">Психологический роман</span>
+          <h2>Преступление и наказание</h2>
+          <p class="author">Фёдор Достоевский</p>
+          <p class="about">Глубокое исследование человеческой совести, морального выбора и искупления.</p>
+          <button type="button" class="btn line-btn full-w">Читать фрагмент</button>
+        </div>
+      </article>
+
+      <article class="card" data-title="чистый код" data-author="роберт мартин">
+        <div class="cover c-blue">IT и разработка</div>
+        <div class="card-info">
+          <span class="tag">Программирование</span>
+          <h2>Чистый код</h2>
+          <p class="author">Роберт Мартин</p>
+          <p class="about">Практическое руководство по созданию читаемого, гибкого и поддерживаемого программного кода.</p>
+          <button type="button" class="btn line-btn full-w">Читать фрагмент</button>
+        </div>
+      </article>
+
+      <article class="card" data-title="1984" data-author="джордж оруэлл">
+        <div class="cover c-red">Антиутопия</div>
+        <div class="card-info">
+          <span class="tag">Антиутопия</span>
+          <h2>1984</h2>
+          <p class="author">Джордж Оруэлл</p>
+          <p class="about">Культовый роман-предупреждение о тоталитарном контроле и свободе мысли.</p>
+          <button type="button" class="btn line-btn full-w">Читать фрагмент</button>
+        </div>
+      </article>
+
+      <article class="card" data-title="пикник на обочине" data-author="аркадий и борис стругацкие">
+        <div class="cover c-green">Фантастика</div>
+        <div class="card-info">
+          <span class="tag">Научная фантастика</span>
+          <h2>Пикник на обочине</h2>
+          <p class="author">Аркадий и Борис Стругацкие</p>
+          <p class="about">История сталкеров, рискующих жизнью ради загадочных артефактов в аномальной Зоне.</p>
+          <button type="button" class="btn line-btn full-w">Читать фрагмент</button>
+        </div>
+      </article>
+    </div>
+
+    <p id="emptyMessage" class="not-found hide">По вашему запросу книги не найдены.</p>
+  </main>
+
+  <footer class="bottom-bar">
+    <div class="wrap">
+      <p>© 2026 Онлайн-библиотека "Переплёт".</p>
+    </div>
+  </footer>
+
+  <script src="../scripts/script.js"></script>
+</body>
+</html>
