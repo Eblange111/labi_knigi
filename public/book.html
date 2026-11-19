@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Просмотр книги</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплет</a>
+      <nav class="menu">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог книг</a>
+        <a href="add.html">Добавить книгу</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div id="content" class="detail-box">Загрузка</div>
+  </main>
+
+  <footer class="bottom-bar">
+    <div class="wrap">
+      <p>2026 Онлайн-библиотека Переплет</p>
+    </div>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const content = document.getElementById('content');
+
+    fetch(`/api/books/${id}`).then(async res => {
+      if (!res.ok) {
+        content.innerHTML = `<h1>Ошибка 404</h1><p class="sub-text">Книга с таким ID не найдена.</p><a href="catalog.html" class="btn green-btn">В каталог</a>`;
+        return;
+      }
+      const book = await res.json();
+      content.innerHTML = `
+        <span class="tag">${book.genre_name} • ${book.pub_year} год</span>
+        <h1>${book.title}</h1>
+        <p class="detail-author">Автор: <strong>${book.author}</strong></p>
+        <div class="detail-desc"><p>${book.description || 'Описание отсутствует.'}</p></div>
+        <div class="detail-actions">
+          <a href="catalog.html" class="btn line-btn">← Назад</a>
+          <a href="edit.html?id=${book.id}" class="btn green-btn">Редактировать</a>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

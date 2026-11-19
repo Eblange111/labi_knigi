@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог книг</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav id="mainNav" class="menu"></nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="cat-head">
+      <h1>Каталог книг</h1>
+      <div class="filter-bar">
+        <select id="genreFilter" class="input-box"><option value="">Все жанры</option></select>
+      </div>
+    </div>
+
+    <div id="booksGrid" class="books-grid"></div>
+  </main>
+
+  <script src="scripts/auth-nav.js"></script>
+  <script>
+    let currentUser = null;
+    const grid = document.getElementById('booksGrid');
+    const genreSelect = document.getElementById('genreFilter');
+
+    fetch('/api/genres').then(r => r.json()).then(genres => {
+      genres.forEach(g => genreSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+    });
+
+    async function loadBooks(genreId = '') {
+      const res = await fetch('/api/books?genre=' + genreId);
+      const books = await res.json();
+      grid.innerHTML = '';
+
+      books.forEach(book => {
+        const coverHtml = book.image
+          ? `<img src="assets/${book.image}" alt="${book.title}" class="book-img" onerror="this.outerHTML='<div class=\\'cover\\'>${book.pub_year} г.</div>'">`
+          : `<div class="cover">${book.pub_year} г.</div>`;
+
+        let actionButtons = `<a href="book.html?id=${book.id}" class="btn line-btn full-w">Подробнее</a>`;
+
+        if (!currentUser) {
+          actionButtons += `<a href="login.html" class="btn green-btn full-w">Войти, чтобы взять книгу</a>`;
+        } else if (currentUser.role === 'USER') {
+          actionButtons += `<button onclick="createRequest(${book.id}, '${book.title}')" class="btn green-btn full-w">Оформить заявку</button>`;
+        } else if (currentUser.role === 'ADMIN') {
+          actionButtons += `
+            <a href="edit.html?id=${book.id}" class="btn small-btn">Изменить</a>
+            <button onclick="deleteBook(${book.id})" class="btn del-btn" style="flex:1">Удалить</button>
+          `;
+        }
+
+        grid.innerHTML += `
+          <article class="card">
+            ${coverHtml}
+            <div class="card-info">
+              <span class="tag">${book.genre_name} • ${book.pub_year} г.</span>
+              <h2>${book.title}</h2>
+              <p class="author">${book.author}</p>
+              <p class="about">${book.description || ''}</p>
+              <div class="card-actions">${actionButtons}</div>
+            </div>
+          </article>
+        `;
+      });
+    }
+
+    async function createRequest(bookId, title) {
+      const days = prompt(`На сколько дней хотите взять книгу «${title}»? (от 1 до 60)`, '14');
+      if (!days) return;
+      const comment = prompt('Комментарий к заявке (необязательно):', '');
+
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book_id: bookId, days_count: days, comment })
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        alert(result.error);
+        return;
+      }
+      alert('Заявка успешно оформлена. Вы можете отслеживать её в разделе «Мои заявки».');
+      window.location.href = 'profile.html';
+    }
+
+    async function deleteBook(id) {
+      if (!confirm('Удалить книгу из фонда?')) return;
+      await fetch(`/api/books/${id}/delete`, { method: 'POST' });
+      loadBooks(genreSelect.value);
+    }
+
+    genreSelect.addEventListener('change', () => loadBooks(genreSelect.value));
+
+    initAuthNav().then(user => {
+      currentUser = user;
+      loadBooks();
+    });
+  </script>
+</body>
+</html>

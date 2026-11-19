@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админка</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav id="mainNav" class="menu"></nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="cat-head">
+      <h1>Панель админа (Все заявки)</h1>
+      <a href="add.html" class="btn green-btn">+ Добавить книгу</a>
+    </div>
+
+    <div id="adminList" class="req-list"></div>
+  </main>
+
+  <script src="scripts/auth-nav.js"></script>
+  <script>
+    const statuses = ['Новая', 'Одобрена', 'Выдана', 'Возвращена', 'Отклонена'];
+
+    async function loadAllRequests() {
+      const res = await fetch('/api/admin/requests');
+      if (!res.ok) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const list = await res.json();
+      const box = document.getElementById('adminList');
+
+      if (list.length === 0) {
+        box.innerHTML = '<p class="not-found">Заявок от читателей пока нет.</p>';
+        return;
+      }
+
+      box.innerHTML = list.map(r => `
+        <div class="req-card">
+          <div>
+            <span class="status-badge">${r.status}</span>
+            <h3>Заявка #${r.id}: «${r.book_title}» (${r.book_author})</h3>
+            <p>Читатель: <b>${r.user_name}</b> (логин: ${r.user_login}, ${r.user_email})</p>
+            <p>Срок: <b>${r.days_count} дн.</b> • Комментарий: ${r.comment || 'нет'}</p>
+          </div>
+          <div class="req-actions">
+            <select class="input-box" onchange="changeStatus(${r.id}, this.value)">
+              ${statuses.map(st => `<option value="${st}" ${st === r.status ? 'selected' : ''}>${st}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function changeStatus(id, status) {
+      const res = await fetch(`/api/admin/requests/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) loadAllRequests();
+    }
+
+    initAuthNav().then(loadAllRequests);
+  </script>
+</body>
+</html>

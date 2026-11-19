@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Доступ запрещен</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav id="mainNav" class="menu"></nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box" style="text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 10px;">🔒</div>
+      <span class="tag">Ошибка 403 - Доступ запрещен</span>
+      <h1 style="margin-top: 8px;">Недостаточно прав</h1>
+      <p class="sub-text">
+        Управлять книжным фондом, а также просматривать панель управления может только <b>администратор</b>.
+      </p>
+      <div class="banner-btns">
+        <a href="catalog.html" class="btn green-btn">Вернуться в каталог</a>
+        <a href="profile.html" class="btn line-btn">Мои заявки</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bottom-bar">
+    <div class="wrap">
+      <p>© 2026 Онлайн-библиотека «КнигоМир». Лабораторная работа №3.</p>
+    </div>
+  </footer>
+
+  <script src="scripts/auth-nav.js"></script>
+  <script>initAuthNav();</script>
+</body>
+</html>

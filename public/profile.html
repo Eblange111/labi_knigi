@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мои заявки</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav id="mainNav" class="menu"></nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="cat-head">
+      <h1 id="welcomeTitle">Личный кабинет</h1>
+      <a href="catalog.html" class="btn line-btn">Перейти в каталог</a>
+    </div>
+
+    <div class="auth-box" style="max-width: 100%; margin-bottom: 30px;">
+      <h2 style="font-size: 20px; margin-bottom: 6px;">Оформить новую заявку на книгу</h2>
+      <p class="sub-text" style="margin-bottom: 16px;">Выберите издание из фонда библиотеки и укажите желаемый срок чтения.</p>
+      <div id="errBox" class="err-box hide"></div>
+
+      <form id="newReqForm" style="display: grid; grid-template-columns: 2fr 1fr 2fr auto; gap: 12px; align-items: end;">
+        <div class="field" style="margin-bottom: 0;">
+          <label for="bookSelect">Книга</label>
+          <select id="bookSelect" name="book_id" class="input-box" required>
+            <option value="">Загрузка списка</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-bottom: 0;">
+          <label for="daysInput">Срок (дней)</label>
+          <input type="number" id="daysInput" name="days_count" class="input-box" value="14" min="1" max="60" required>
+        </div>
+
+        <div class="field" style="margin-bottom: 0;">
+          <label for="commentInput">Комментарий</label>
+          <input type="text" id="commentInput" name="comment" class="input-box" >
+        </div>
+
+        <button type="submit" class="btn green-btn">Отправить заявку</button>
+      </form>
+    </div>
+
+    <h2 style="font-size: 22px; margin-bottom: 16px;">Список моих заявок</h2>
+    <div id="requestsList" class="req-list"></div>
+  </main>
+
+  <footer class="bottom-bar">
+    <div class="wrap">
+      <p>2026 Онлайн-библиотека Переплет</p>
+    </div>
+  </footer>
+
+  <script src="scripts/auth-nav.js"></script>
+  <script>
+    async function loadBooksList() {
+      const res = await fetch('/api/books');
+      const books = await res.json();
+      const select = document.getElementById('bookSelect');
+      select.innerHTML = '<option value="">Выберите книгу...</option>';
+      books.forEach(b => {
+        select.innerHTML += `<option value="${b.id}">${b.title} (${b.author})</option>`;
+      });
+    }
+
+    document.getElementById('newReqForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById('errBox');
+      errBox.classList.add('hide');
+
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        errBox.textContent = result.error || 'Ошибка при создании заявки.';
+        errBox.classList.remove('hide');
+        return;
+      }
+
+      e.target.reset();
+      document.getElementById('daysInput').value = 14;
+      loadMyRequests();
+    });
+
+    async function loadMyRequests() {
+      const res = await fetch('/api/my-requests');
+      if (!res.ok) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const list = await res.json();
+      const box = document.getElementById('requestsList');
+
+      if (list.length === 0) {
+        box.innerHTML = '<p class="not-found">У вас пока нет оформленных заявок на книги.</p>';
+        return;
+      }
+
+      box.innerHTML = list.map(r => `
+        <div class="req-card">
+          <div>
+            <span class="status-badge">${r.status}</span>
+            <h3>${r.book_title} <small>(${r.book_author})</small></h3>
+            <p>Срок чтения: <b>${r.days_count} дн.</b> • Дата заявки: ${r.created_at}</p>
+            <p class="author">Комментарий: ${r.comment || 'без комментария'}</p>
+          </div>
+          <div class="req-actions">
+            ${r.status === 'Новая' ? `<button onclick="editReq(${r.id}, ${r.days_count}, '${(r.comment || '').replace(/'/g, "\\'")}')" class="btn small-btn">Изменить</button>` : ''}
+            <button onclick="deleteReq(${r.id})" class="btn del-btn">Отменить</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function editReq(id, oldDays, oldComment) {
+      const days_count = prompt('Новый срок чтения (дней):', oldDays);
+      if (!days_count) return;
+      const comment = prompt('Новый комментарий:', oldComment);
+
+      const res = await fetch(`/api/requests/${id}/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ days_count, comment })
+      });
+      const result = await res.json();
+      if (!res.ok) alert(result.error);
+      loadMyRequests();
+    }
+
+    async function deleteReq(id) {
+      if (!confirm('Отменить и удалить эту заявку?')) return;
+      const res = await fetch(`/api/requests/${id}/delete`, { method: 'POST' });
+      const result = await res.json();
+      if (!res.ok) alert(result.error);
+      loadMyRequests();
+    }
+
+    initAuthNav().then(user => {
+      if (user) {
+        document.getElementById('welcomeTitle').textContent = `Личный кабинет: ${user.full_name}`;
+        loadBooksList();
+        loadMyRequests();
+      }
+    });
+  </script>
+</body>
+</html>

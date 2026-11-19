@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav id="mainNav" class="menu"></nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box">
+      <h1>Вход в библиотеку</h1>
+      <p class="sub-text"></b></p>
+      <div id="errBox" class="err-box hide"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label>Логин или Email *</label>
+          <input type="text" name="login" class="input-box" placeholder="admin" required>
+        </div>
+        <div class="field">
+          <label>Пароль *</label>
+          <input type="password" name="password" class="input-box" placeholder="admin1234" required>
+        </div>
+        <button type="submit" class="btn green-btn full-w">Войти</button>
+      </form>
+      <p class="switch-auth">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+    </div>
+  </main>
+
+  <script src="scripts/auth-nav.js"></script>
+  <script>
+    initAuthNav();
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById('errBox');
+      errBox.classList.add('hide');
+
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        errBox.textContent = result.error || 'Ошибка входа';
+        errBox.classList.remove('hide');
+        return;
+      }
+
+      // После входа как ADMIN перенаправляем в админ-панель
+      window.location.href = result.user.role === 'ADMIN' ? 'admin.html' : 'profile.html';
+    });
+  </script>
+</body>
+</html>

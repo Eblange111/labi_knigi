@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактировать книгу</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav class="menu">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог книг</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box">
+      <h1>Редактировать книгу</h1>
+      <div id="errBox" class="err-box hide"></div>
+
+      <form id="editForm">
+        <div class="field"><label>Название книги *</label><input type="text" id="title" name="title" class="input-box"></div>
+        <div class="field"><label>Автор *</label><input type="text" id="author" name="author" class="input-box"></div>
+        <div class="field"><label>Жанр *</label><select id="genreSelect" name="genre_id" class="input-box"></select></div>
+        <div class="field"><label>Год издания *</label><input type="number" id="pub_year" name="pub_year" class="input-box"></div>
+        <div class="field">
+  <label>Файл обложки. папка assets</label>
+  <input type="text" id="image" name="image" class="input-box" placeholder="kartinka.jpg">
+</div>
+
+        <div class="field"><label>Описание</label><textarea id="description" name="description" rows="4" class="input-box"></textarea></div>
+        <button type="submit" class="btn green-btn full-w">Сохранить изменения</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const id = new URLSearchParams(window.location.search).get('id');
+
+    Promise.all([
+      fetch('/api/genres').then(r => r.json()),
+      fetch(`/api/books/${id}`).then(r => r.ok ? r.json() : null)
+    ]).then(([genres, book]) => {
+      if (!book) {
+        document.querySelector('.auth-box').innerHTML = '<h1>Книга не найдена</h1><a href="catalog.html" class="btn green-btn">В каталог</a>';
+        return;
+      }
+      const sel = document.getElementById('genreSelect');
+      genres.forEach(g => {
+        sel.innerHTML += `<option value="${g.id}" ${g.id === book.genre_id ? 'selected' : ''}>${g.name}</option>`;
+      });
+      document.getElementById('title').value = book.title;
+      document.getElementById('author').value = book.author;
+      document.getElementById('pub_year').value = book.pub_year;
+      document.getElementById('description').value = book.description || '';
+    });
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch(`/api/books/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        const errBox = document.getElementById('errBox');
+        errBox.innerHTML = result.errors.map(err => `<p>• ${err}</p>`).join('');
+        errBox.classList.remove('hide');
+        return;
+      }
+      window.location.href = `book.html?id=${id}`;
+    });
+  </script>
+</body>
+</html>

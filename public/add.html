@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Добавить книгу</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav class="menu">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог книг</a>
+        <a href="add.html" class="active">Добавить книгу</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box">
+      <h1>Добавить новую книгу</h1>
+      <div id="errBox" class="err-box hide"></div>
+
+      <form id="addForm">
+        <div class="field"><label>Название книги *</label><input type="text" name="title" class="input-box"></div>
+        <div class="field"><label>Автор *</label><input type="text" name="author" class="input-box"></div>
+        <div class="field"><label>Жанр *</label><select id="genreSelect" name="genre_id" class="input-box"><option value="">Выберите жанр...</option></select></div>
+        <div class="field"><label>Год издания *</label><input type="number" name="pub_year" class="input-box"></div>
+        <div class="field">
+  <label>Файл обложки. Аапка assets </label>
+  <input type="text" id="image" name="image" class="input-box" placeholder="kartinka.jpg">
+</div>
+
+        <div class="field"><label>Описание</label><textarea name="description" rows="4" class="input-box"></textarea></div>
+        <button type="submit" class="btn green-btn full-w">Сохранить в БД</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    fetch('/api/genres').then(r => r.json()).then(genres => {
+      const sel = document.getElementById('genreSelect');
+      genres.forEach(g => sel.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+    });
+
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch('/api/books', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        const errBox = document.getElementById('errBox');
+        errBox.innerHTML = result.errors.map(err => `<p>• ${err}</p>`).join('');
+        errBox.classList.remove('hide');
+        return;
+      }
+      window.location.href = 'catalog.html';
+    });
+  </script>
+</body>
+</html>

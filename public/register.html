@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="wrap flex-head">
+      <a href="index.html" class="brand">Переплёт</a>
+      <nav id="mainNav" class="menu"></nav>
+    </div>
+  </header>
+
+  <main class="wrap main-box">
+    <div class="auth-box">
+      <h1>Регистрация читателя</h1>
+      <p class="sub-text">Создайте аккаунт, чтобы оформлять заявки на книги.</p>
+      <div id="errBox" class="err-box hide"></div>
+      <div id="okBox" class="ok-msg hide"></div>
+
+      <form id="regForm">
+        <div class="field"><label>ФИО *</label><input type="text" name="full_name" class="input-box" placeholder="Иванов Иван Иванович"></div>
+        <div class="field"><label>Логин *</label><input type="text" name="login" class="input-box" placeholder="ivan4ello1484"></div>
+        <div class="field"><label>Email *</label><input type="email" name="email" class="input-box" placeholder="ivan@mail.ru"></div>
+        <div class="field"><label>Пароль (минимум 8 символов) *</label><input type="password" name="password" class="input-box" placeholder="••••••••"></div>
+        <button type="submit" class="btn green-btn full-w">Зарегистрироваться</button>
+      </form>
+      <p class="switch-auth">Уже есть аккаунт? <a href="login.html">Войти</a></p>
+    </div>
+  </main>
+
+  <script src="scripts/auth-nav.js"></script>
+  <script>
+    initAuthNav();
+
+    document.getElementById('regForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById('errBox');
+      const okBox = document.getElementById('okBox');
+      errBox.classList.add('hide');
+      okBox.classList.add('hide');
+
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        errBox.innerHTML = result.errors.map(err => `<p>• ${err}</p>`).join('');
+        errBox.classList.remove('hide');
+        return;
+      }
+
+      okBox.textContent = result.message;
+      okBox.classList.remove('hide');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
